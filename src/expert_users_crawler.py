@@ -6,6 +6,7 @@ Created on Mar 25, 2011
 import cjson, json, sys
 from lxml.html import parse
 from collections import defaultdict
+from operator import itemgetter
 
 twitter_users_folder = '/mnt/chevron/kykamath/data/twitter/odds_maker/users/'
 twitter_users_crawl_folder = twitter_users_folder + 'crawl/'
@@ -54,6 +55,7 @@ class UsersCrawl:
 
     # Crawl conditions.
     number_of_items_to_crawl_every_run = 10
+    number_of_users_to_track = 250
     
     # Static variables.
     topics = defaultdict(dict)
@@ -121,10 +123,40 @@ class UsersCrawl:
             json.dump(usersToCrawl, open(UsersCrawl.users_to_crawl_file, 'w'), separators=(',',':'))
             json.dump(listsToCrawl, open(UsersCrawl.lists_to_crawl_file, 'w'), separators=(',',':'))
             json.dump(crawledInfo, open(UsersCrawl.crawled_info_file, 'w'), separators=(',',':'))
+    
+    @staticmethod
+    def buildUsersToTrackList():
+        users, userToTopic, topicCount = {}, {}, defaultdict(int)
+        idTouidMap = {}
+        for d in open(UsersCrawl.users_file): 
+            data = json.loads(d.strip())
+            users[data['id']] = defaultdict(int) 
+            userToTopic[data['id']] = data['t'] 
+        
+        for d in open(UsersCrawl.lists_file):
+            data = json.loads(d)
+            members, topic = data['u'], data['t']
+            for uid, m in members: 
+                try:
+                    users[m][topic]+=1
+                    idTouidMap[m] = uid
+                except: pass
+            topicCount[data['t']]+=1
+        
+        userDistribution = defaultdict(list)
+        for u in users:
+            uTopic = userToTopic[u]
+            userDistribution[uTopic].append((u, users[u][uTopic]/float(topicCount[uTopic])))
+        f = open(twitter_users_crawl_folder+'users_to_crawl', 'w')
+        for topic in userDistribution:
+            for a, b in sorted(userDistribution[topic], key=itemgetter(1), reverse=True)[:UsersCrawl.number_of_users_to_track]:
+                f.write(' '.join([topic, idTouidMap[a], str(a), str(b)])+'\n')
+        f.close()
 
 def run():
     if sys.argv >= 2:
         if sys.argv[1] == 'users_crawler': UsersCrawl.crawl()
         
 if __name__ == '__main__':
-    run()
+#    run()
+    UsersCrawl.buildUsersToTrackList()
