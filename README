@@ -1,3 +1,14 @@
 Project to analyze casino odds, for sporting events, using social data.
 
-Created a common folder at: /mnt/chevron/kykamath/data/twitter/odds_maker
+------------------------
+Dependencies
+------------------------
+Experts crawler:
+	1. lxml.html (http://lxml.de/lxmlhtml.html) - Parsing HTML.
+	2. python-cjson (http://pypi.python.org/pypi/python-cjson) - Encoding-decding json.
+	
+------------------------
+General info
+------------------------	
+Common folder at /mnt/chevron/kykamath/data/twitter/odds_maker
+

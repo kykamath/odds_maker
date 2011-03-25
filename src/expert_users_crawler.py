@@ -44,24 +44,19 @@ def scrapeMembersForList(list):
 
 class UsersCrawl:
     
-    topics = defaultdict(dict)
+    # Files used in the crawl.
     topics_file = 'snowball_seeds'
-    
     users_to_crawl_file = twitter_users_crawl_folder+'users_to_crawl.json'
     lists_to_crawl_file = twitter_users_crawl_folder+'lists_to_crawl.json'
     crawled_info_file = twitter_users_crawl_folder+'crawled_info.json'
-    
     users_file = twitter_users_crawl_folder+'users'
     lists_file = twitter_users_crawl_folder+'lists'
 
     # Crawl conditions.
-    min_followers_count = 250
-    max_member_count = 20
     number_of_items_to_crawl_every_run = 10
     
-    number_of_lists_per_user_limit = 100
-    time_to_sleep_after_every_api_call = 3
-    
+    # Static variables.
+    topics = defaultdict(dict)
     
     @staticmethod
     def loadSeedInformation():
