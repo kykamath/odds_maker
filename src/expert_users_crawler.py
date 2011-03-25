@@ -72,10 +72,8 @@ class UsersCrawl:
     @staticmethod
     def getListsFor(user, topic):
         returnSet = set()
-#        for item in Cursor(UsersCrawl.twitter_api.lists_memberships, str(user)).items(UsersCrawl.number_of_lists_per_user_limit):
         for item in scrapeListsForUser(user):
             slug = item.uri.split('/')[-1]
-#            if item.member_count <= UsersCrawl.max_member_count: 
             for keyword in UsersCrawl.topics[topic]['keywords']: 
                 if slug.find(keyword) > -1: returnSet.add(item.uri.lower())
         return returnSet
@@ -84,9 +82,7 @@ class UsersCrawl:
     def getUsersFor(uri):
         returnSet = set()
         user, slug = tuple(uri.split('/')[-2:])
-#        for item in Cursor(UsersCrawl.twitter_api.list_members, user, slug).items():
         for item in scrapeMembersForList(uri):
-#            if item.followers_count >= UsersCrawl.min_followers_count: 
             returnSet.add((item.screen_name.lower(), item.id))
         return returnSet
     
@@ -115,7 +111,6 @@ class UsersCrawl:
                         for l in lists: 
                             if l not in crawledInfo['lists'] and l not in listsToCrawl[topic]: listsToCrawl[topic].append(l)
                     except: pass
-#                    time.sleep(UsersCrawl.time_to_sleep_after_every_api_call)
             for topic in listsToCrawl:
                 crawlList=listsToCrawl[topic][:UsersCrawl.number_of_items_to_crawl_every_run]
                 for uri in crawlList:
@@ -128,7 +123,6 @@ class UsersCrawl:
                             user = userTuple[0]
                             if user not in crawledInfo['users'] and userTuple not in usersToCrawl[topic]: usersToCrawl[topic].append(userTuple)
                     except: pass
-#                    time.sleep(UsersCrawl.time_to_sleep_after_every_api_call)
                         
             json.dump(usersToCrawl, open(UsersCrawl.users_to_crawl_file, 'w'), separators=(',',':'))
             json.dump(listsToCrawl, open(UsersCrawl.lists_to_crawl_file, 'w'), separators=(',',':'))
@@ -136,18 +130,14 @@ class UsersCrawl:
 
     @staticmethod
     def demo():
-        uri = '/'.join(['infolaber', 'labmates'])
         user = 'TrueHoopNetwork'
-#        UsersCrawl.min_followers_count = 55
-#        UsersCrawl.max_member_count = 1000
         UsersCrawl.loadSeedInformation()
         print UsersCrawl.getListsFor(user, 'nba_basketball')
-#        print UsersCrawl.getUsersFor(uri)
     
             
 def run():
     if sys.argv >= 2:
         if sys.argv[1] == 'users_crawler': UsersCrawl.crawl()
+        
 if __name__ == '__main__':
     run()
-#    UsersCrawl.demo()
