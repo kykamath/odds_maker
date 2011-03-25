@@ -10,16 +10,16 @@ from collections import defaultdict
 twitter_users_folder = '/mnt/chevron/kykamath/data/twitter/odds_maker/users/'
 twitter_users_crawl_folder = twitter_users_folder + 'crawl/'
 
-class API:
-    @staticmethod
-    def parse(url):
-        doc = None
-        try:
-            while doc == None: 
-                doc = parse(url).getroot()
-                print url
-        except: return None
-        return doc 
+#class API:
+#    @staticmethod
+#    def parse(url):
+#        doc = None
+#        try:
+#            while doc == None: 
+#                doc = parse(url).getroot()
+#                print url
+#        except: return None
+#        return doc 
     
 def scrapeListsForUser(user):
     class List:
@@ -81,7 +81,6 @@ class UsersCrawl:
     @staticmethod
     def getUsersFor(uri):
         returnSet = set()
-        user, slug = tuple(uri.split('/')[-2:])
         for item in scrapeMembersForList(uri):
             returnSet.add((item.screen_name.lower(), item.id))
         return returnSet
@@ -128,13 +127,6 @@ class UsersCrawl:
             json.dump(listsToCrawl, open(UsersCrawl.lists_to_crawl_file, 'w'), separators=(',',':'))
             json.dump(crawledInfo, open(UsersCrawl.crawled_info_file, 'w'), separators=(',',':'))
 
-    @staticmethod
-    def demo():
-        user = 'TrueHoopNetwork'
-        UsersCrawl.loadSeedInformation()
-        print UsersCrawl.getListsFor(user, 'nba_basketball')
-    
-            
 def run():
     if sys.argv >= 2:
         if sys.argv[1] == 'users_crawler': UsersCrawl.crawl()
